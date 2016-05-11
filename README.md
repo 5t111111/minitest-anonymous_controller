@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
   private
 
   def not_authenticated # <= Think if you want to test this filter
-    redirect_to root_path, alert: 'Please login first'
+    redirect_to login_url, alert: 'Please login first'
   end
 
   ...
