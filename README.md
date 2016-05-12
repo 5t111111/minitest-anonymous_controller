@@ -12,19 +12,20 @@ gem 'minitest-anonymous_controller'
 
 ## Usage
 
-The typical use-cases for anonymous controllers are to test filters defined in a base controller.
+The typical use-cases for anonymous controllers are to test filters defined in a base (sort of abstract) controller.
 
 __ApplicationController__
 
 ```ruby
 class ApplicationController < ActionController::Base
+  before_action :require_login
 
   ...
 
   private
 
-  def not_authenticated # <= Think if you want to test this filter
-    redirect_to login_url, alert: 'Please login first'
+  def require_login # <= Assume if you want to test this filter
+    redirect_to login_url, alert: 'Please login first' unless logged_in?
   end
 
   ...
@@ -32,23 +33,22 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-__ApplicatinControllerTest__
+__ApplicationControllerTest__
 
 ```ruby
 require 'test_helper'
 
 class ApplicationControllerTest < ActionDispatch::IntegrationTest
-  extend Minitest::AnonymousController
-
-  ApplicationController.insert_dummy_action
+  ApplicationController.insert_dummy_action # <= Insert dummy action to the controller
 
   test 'should redirect someone without logging in to login page' do
-    ApplicationController.stub_any_instance(:current_user, nil) do
-      get dummy_action_url # <= Now you can test the filter via the dummy action
-      assert_equal 'Please login first', flash[:alert]
-      assert_redirected_to login_url
-    end
+    get dummy_action_url # <= Now you can test the filter via the dummy action
+    assert_equal 'Please login first', flash[:alert]
+    assert_redirected_to root_url
   end
+
+  ...
+
 end
 ```
 
