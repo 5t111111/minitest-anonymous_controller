@@ -6,7 +6,7 @@ module Minitest
       # Define dummy action for testing in ApplicationController class context
       self.class_eval do
         def dummy_action
-          render :nothing
+          head :ok
         end
       end
 
@@ -21,4 +21,4 @@ module Minitest
   end
 end
 
-ActionController::Base.extend Minitest::AnonymousController
+ActionController::Base.send(:extend, Minitest::AnonymousController)
